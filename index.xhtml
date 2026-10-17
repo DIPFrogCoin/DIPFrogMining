@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#063b22" />
+<title>DIP FROG Mining</title>
+<script src="https://telegram.org/js/telegram-web-app.js">
+//<![CDATA[
+
+//]]>
+</script>
+<style>
+:root{--green:#39f36b;--dark:#052918;--gold:#ffd447;--panel:#0c452b}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at top,#17663b,#041a10 72%);color:#f3fff5;min-height:100vh}
+main{max-width:520px;margin:auto;padding:18px 16px 30px}
+.top{display:flex;align-items:center;gap:12px;margin:8px 0 20px}.logo{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid var(--green);background:#fff}
+.brand{font-weight:900;font-size:20px;letter-spacing:.4px}.sub{font-size:12px;color:#b8e9c5}
+.balance{background:linear-gradient(135deg,#17683b,#092c1b);border:1px solid #37e86b66;border-radius:22px;text-align:center;padding:22px 14px;margin-bottom:16px;box-shadow:0 10px 32px #0004}
+.label{font-size:12px;color:#b8e9c5;text-transform:uppercase;letter-spacing:1.4px}.amount{font-size:38px;font-weight:900;margin:4px 0;color:var(--gold)}.unit{font-size:13px;color:#c5f5d0}
+.miner{position:relative;display:flex;align-items:center;justify-content:center;min-height:215px;margin:8px 0 16px}
+.coin{width:190px;height:190px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#67ff81,#08a83d 55%,#075c2b);border:7px solid #a5ff9e;box-shadow:0 0 0 5px #0a5b2d,0 0 35px #35ff6a66;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#07391b;cursor:pointer;user-select:none;transition:transform .08s;touch-action:manipulation}
+.coin:active{transform:scale(.94)}.frog{font-size:74px;line-height:1}.dip{font-size:26px;font-weight:1000;letter-spacing:2px;color:#ffdf36;text-shadow:1px 2px #18552a}
+.hint{position:absolute;bottom:0;color:#b9eac8;font-size:12px}.buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+button{font:inherit;cursor:pointer;border:0}.action{background:#10482c;border:1px solid #2b8e50;border-radius:14px;padding:13px 5px;color:#fff;font-weight:700;font-size:13px}.action span{display:block;font-size:20px;margin-bottom:4px}
+.card{background:#092f1e;border:1px solid #1c7540;border-radius:16px;padding:15px;margin-top:13px}.card h3{margin:0 0 10px;font-size:15px}.row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:#d5f5dc}.small{font-size:11px;color:#a6dcb6;line-height:1.5}.progress{height:8px;background:#17472d;border-radius:20px;overflow:hidden;margin:9px 0}.bar{height:100%;width:0;background:linear-gradient(90deg,#3bf06b,#ffe04c);transition:width .2s}.primary{background:var(--green);color:#07371a;border-radius:12px;padding:11px 13px;font-weight:900}.secondary{background:#174c30;color:#e9fff0;border:1px solid #2b8e50;border-radius:12px;padding:10px}.notice{font-size:11px;color:#b7e5c3;margin-top:16px;text-align:center}
+.toast{position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:#f5ffef;color:#07371a;padding:10px 15px;border-radius:30px;font-size:13px;font-weight:800;display:none;box-shadow:0 6px 20px #0005;z-index:5}
+</style>
+</head>
+<body>
+<main>
+ <header class="top">
+  <img class="logo" id="logo" alt="DIP Frog logo" src="dip-frog-logo.jpg" onerror="this.style.display='none'" />
+  <div><div class="brand">DIP FROG MINING 🐸</div><div class="sub">Tap • Mine • Earn points</div></div>
+ </header>
+ <section class="balance">
+  <div class="label">Your mining balance</div><div class="amount" id="balance">0</div><div class="unit">DIP points</div>
+ </section>
+ <section class="miner">
+  <button class="coin" id="tap" aria-label="Tap to mine"><span class="frog">🐸</span><span class="dip">DIP</span></button>
+  <div class="hint">Tap the coin to mine +1 point</div>
+ </section>
+ <section class="buttons">
+  <button class="action" id="daily"><span>🎁</span>Daily reward</button>
+  <button class="action" id="ref"><span>👥</span>Invite friends</button>
+  <button class="action" id="board"><span>🏆</span>Leaderboard</button>
+ </section>
+ <section class="card">
+  <h3>⚡ Mining power</h3>
+  <div class="row"><span>Points per tap</span><strong id="power">1</strong></div>
+  <div class="progress"><div class="bar" id="progress"></div></div>
+  <div class="row"><span>Next power upgrade</span><strong id="next">100 points</strong></div>
+  <button class="primary" style="width:100%;margin-top:12px" id="upgrade">Upgrade power (100 points)</button>
+ </section>
+ <section class="card">
+  <h3>👥 Referral</h3>
+  <div class="row"><span>Friends invited</span><strong id="friends">0</strong></div>
+  <p class="small">Invite friends using your personal Telegram link. Referral rewards need a secure backend to verify new users.</p>
+  <button class="secondary" style="width:100%" id="copyref">Copy invite link</button>
+ </section>
+ <section class="card">
+  <h3>🏆 Leaderboard</h3><div class="row"><span>Your current local score</span><strong id="score">0</strong></div>
+  <p class="small">This demo stores progress only in this browser. A shared leaderboard and cross-device balances require a backend database.</p>
+  <button class="secondary" style="width:100%" id="showboard">View demo leaderboard</button>
+ </section>
+ <p class="notice">Demo version • Points are in-app demo points, not real tokens or guaranteed rewards.</p>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+//<![CDATA[
+
+const tg = window.Telegram?.WebApp;
+try { tg?.ready(); tg?.expand(); tg?.setHeaderColor('#063b22'); tg?.setBackgroundColor('#052918'); } catch(e){}
+const botUsername = 'DIPFrogMiningBot';
+let state = {balance:0,power:1,friends:0,lastDaily:'',upgrades:0};
+try { const saved=JSON.parse(localStorage.getItem('dipfrog-demo')||'null'); if(saved) state={...state,...saved}; } catch(e){}
+const $=id=>document.getElementById(id);
+function save(){try{localStorage.setItem('dipfrog-demo',JSON.stringify(state));}catch(e){}}
+function render(){ $('balance').textContent=Math.floor(state.balance).toLocaleString(); $('power').textContent=state.power; $('next').textContent=(state.upgrades+1)*100+' points'; $('upgrade').textContent='Upgrade power ('+((state.upgrades+1)*100)+' points)'; $('friends').textContent=state.friends; $('score').textContent=Math.floor(state.balance).toLocaleString(); $('progress').style.width=Math.min(100,(state.balance%100))+'%'; save();}
+let toastTimer;
+function toast(msg){const el=$('toast');el.textContent=msg;el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',2100); try{tg?.HapticFeedback?.impactOccurred('light')}catch(e){}}
+$('tap').addEventListener('click',()=>{state.balance+=state.power;render();});
+$('daily').addEventListener('click',()=>{const today=new Date().toISOString().slice(0,10);if(state.lastDaily===today){toast('Daily reward already claimed today!');return;}state.lastDaily=today;state.balance+=50;render();toast('+50 daily demo points!');});
+$('upgrade').addEventListener('click',()=>{const cost=(state.upgrades+1)*100;if(state.balance<cost){toast('Need '+cost+' points first.');return;}state.balance-=cost;state.power++;state.upgrades++;render();toast('Mining power upgraded!');});
+function inviteUrl(){const id=tg?.initDataUnsafe?.user?.id;return 'https://t.me/'+botUsername+(id?'?start=ref_'+id:'');}
+$('ref').addEventListener('click',()=>{const url=inviteUrl();if(tg?.openTelegramLink){tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent('Join DIP FROG Mining 🐸'));}else{navigator.clipboard?.writeText(url);toast('Invite link copied (if supported).');}});
+$('copyref').addEventListener('click',async()=>{const url=inviteUrl();try{await navigator.clipboard.writeText(url);toast('Invite link copied!');}catch(e){toast(url);}});
+$('board').addEventListener('click',()=>toast('Shared leaderboard needs backend setup.'));
+$('showboard').addEventListener('click',()=>toast('Demo rank: local score '+Math.floor(state.balance).toLocaleString()));
+render();
+
+//]]>
+</script>
+</body>
+</html>
